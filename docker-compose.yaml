@@ -1,0 +1,124 @@
+﻿version: '3.8'
+
+services:
+  postgres-ma:
+    build: ./services/postgres
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    networks:
+      - ms
+    ports:
+      - 3333:22808
+
+  mongo-ma:
+    build: ./services/mongo
+    depends_on:
+      - mongo
+    env_file:
+     - .env
+    networks:
+      - ms
+    ports:
+      - 2222:22808
+
+  redis-ma:
+    build: ./services/redis
+    restart: always
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    networks:
+      - ms
+    ports:
+      - 1111:22808
+
+#   neo4j-ma:
+#     restart: always 
+#     build: ./services/neo4j
+#     depends_on:
+#       - neo4j
+#       - postgres-ma
+#       - mongo-ma
+#       - elastic-ma
+#     env_file:
+#       - .env
+#     networks:
+#       - ms
+
+#   elastic-ma:
+#     build: ./services/elastic
+#     depends_on:
+#       - elastic
+#     env_file:
+#       - .env
+#     networks:
+#       - ms
+
+  redis:
+    image: redis
+    # depends_on:
+    #   - postgres-ma
+    networks:
+      - ms
+
+  mongo:
+    image: mongo
+    networks:
+      - ms
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRE_USER}
+      - POSTGRES_PASSWORD=${POSTGRE_PASS}
+      - POSTGRES_DB=${POSTGRE_DBNAME}
+    networks:
+      - ms
+
+#   neo4j:
+#     image: neo4j
+#     environment:
+#       - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASS}
+#       - NEO4JLABS_PLUGINS=["apoc"]
+#     ports:
+#       - "7474:7474"
+#       - "7687:7687"
+#     networks:
+#       - ms
+#     depends_on:
+#     #   - postgres-ma
+#     #   - mongo-ma
+#     #   - elastic-ma
+
+#   elastic:
+#     image: elasticsearch:8.4.3
+#     environment:
+#       - xpack.security.enabled=false
+#       - discovery.type=single-node
+#     networks:
+#       - ms
+#     ports:
+#       - 54321:9200
+
+#   gateway-ma:
+#     restart: always
+#     build: ./gateway
+#     env_file:
+#       - .env
+#     depends_on:
+#       - postgres-ma
+#       - redis-ma
+#       - neo4j-ma
+#       # - mongo-ma
+#       - elastic-ma
+#     ports:
+#       - 12345:22808
+#     networks:
+#       - ms
+
+networks:
+  ms:
+    driver: bridge
