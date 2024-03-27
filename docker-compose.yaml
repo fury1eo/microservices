@@ -1,33 +1,10 @@
 ﻿version: '3.8'
 
 services:
-  postgres-ma:
-    build: ./services/postgres
+  db-api:
+    build: ./databases/postgres
     depends_on:
       - postgres
-    env_file:
-      - .env
-    networks:
-      - ms
-    ports:
-      - 3333:22808
-
-  mongo-ma:
-    build: ./services/mongo
-    depends_on:
-      - mongo
-    env_file:
-     - .env
-    networks:
-      - ms
-    ports:
-      - 2222:22808
-
-  redis-ma:
-    build: ./services/redis
-    restart: always
-    depends_on:
-      - redis
     env_file:
       - .env
     networks:
@@ -56,18 +33,6 @@ services:
 #       - .env
 #     networks:
 #       - ms
-
-  redis:
-    image: redis
-    # depends_on:
-    #   - postgres-ma
-    networks:
-      - ms
-
-  mongo:
-    image: mongo
-    networks:
-      - ms
 
   postgres:
     image: postgres
