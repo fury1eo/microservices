@@ -21,21 +21,21 @@ def createDatabase(psql, dbName):
 # Создание таблицы групп
 def createTableGroups(psql):
     return psql.execute(
-        f"CREATE TABLE {utils.TABLE_GROUPS} 
-        (id VARCHAR(12) PRIMARY KEY);"
+        f"CREATE TABLE {utils.TABLE_GROUPS} "
+        "(id VARCHAR(12) PRIMARY KEY);"
     )
 
 # Создание таблицы студентов
 def createTableStudents(psql):
     return psql.execute(
-        f"CREATE TABLE {utils.TABLE_STUDENTS} 
-            (
-                id VARCHAR(8) PRIMARY KEY, 
-                name VARCHAR(20) NOT NULL, 
-                surname VARCHAR(20) NOT NULL, 
-                group_fk VARCHAR(12) NOT NULL, 
-                    FOREIGN KEY (group_fk) 
-                    REFERENCES {utils.TABLE_GROUPS} (id)
+        f"CREATE TABLE {utils.TABLE_STUDENTS} \
+            ( \
+                id VARCHAR(8) PRIMARY KEY, \
+                name VARCHAR(20) NOT NULL, \
+                surname VARCHAR(20) NOT NULL, \
+                group_fk VARCHAR(12) NOT NULL, \
+                    FOREIGN KEY (group_fk) \
+                    REFERENCES {utils.TABLE_GROUPS} (id) \
             );"
     )
 
@@ -47,56 +47,56 @@ def createTableLessons(psql):
     )
 
     return psql.execute(
-        f"CREATE TABLE {utils.TABLE_LESSONS} 
-            (
-                id SERIAL PRIMARY KEY, 
-                type lesson_type NOT NULL
+        f"CREATE TABLE {utils.TABLE_LESSONS} \
+            ( \
+                id SERIAL PRIMARY KEY, \
+                type lesson_type NOT NULL \
             );"
     )
 
 # Создание таблицы материалов занятий
 def createTableLessonMaterials(psql):
     return psql.execute(
-        f"CREATE TABLE {utils.TABLE_LESSON_MATERIALS} 
-            (
-                id SERIAL PRIMARY KEY, 
-                lesson_fk INT REFERENCES {utils.TABLE_LESSONS} (id) NOT NULL, 
-                title VARCHAR(50) NOT NULL, 
-                description VARCHAR(255) NOT NULL
+        f"CREATE TABLE {utils.TABLE_LESSON_MATERIALS} \
+            ( \
+                id SERIAL PRIMARY KEY, \
+                lesson_fk INT REFERENCES {utils.TABLE_LESSONS} (id) NOT NULL, \
+                title VARCHAR(50) NOT NULL, \
+                description VARCHAR(255) NOT NULL \
             )"
     )
 
 # Создание таблицы расписания
 def createTableSchedule(psql):
     return psql.execute(
-        f"CREATE TABLE {utils.TABLE_SCHEDULE} 
-            (
-                id SERIAL, 
-                group_fk VARCHAR(12) REFERENCES {utils.TABLE_GROUPS} (id) NOT NULL, 
-                lesson_fk INT REFERENCES {utils.TABLE_LESSONS} (id) NOT NULL, 
-                time TIMESTAMP NOT NULL
-            ) 
+        f"CREATE TABLE {utils.TABLE_SCHEDULE} \
+            ( \
+                id SERIAL, \
+                group_fk VARCHAR(12) REFERENCES {utils.TABLE_GROUPS} (id) NOT NULL, \
+                lesson_fk INT REFERENCES {utils.TABLE_LESSONS} (id) NOT NULL, \
+                time TIMESTAMP NOT NULL \
+            ) \
                 PARTITION BY RANGE (time);"
     )
 
 # Создание таблицы с частью расписания с конкретным временным промежутком
 def createTableSchedulePartition(psql, partitonName, timeFrom, timeTo):
     return psql.execute(
-        f"CREATE TABLE {partitonName} 
-            PARTITION OF {utils.TABLE_SCHEDULE} 
+        f"CREATE TABLE {partitonName} \
+            PARTITION OF {utils.TABLE_SCHEDULE} \
             FOR VALUES FROM ('{timeFrom}') TO ('{timeTo}');"
     )
 
 # Создание таблицы посещений
 def createTableVisits(psql):
     return psql.execute(
-        f"CREATE TABLE {utils.TABLE_VISITS} 
-            (
-                id SERIAL PRIMARY KEY, 
-                visited boolean NOT NULL, 
-                student_fk VARCHAR(8) NOT NULL, 
-                schedule_fk INT NOT NULL, 
-                FOREIGN KEY (student_fk) REFERENCES {utils.TABLE_STUDENTS} (id)
+        f"CREATE TABLE {utils.TABLE_VISITS} \
+            ( \
+                id SERIAL PRIMARY KEY, \
+                visited boolean NOT NULL, \
+                student_fk VARCHAR(8) NOT NULL, \
+                schedule_fk INT NOT NULL, \
+                FOREIGN KEY (student_fk) REFERENCES {utils.TABLE_STUDENTS} (id) \
             );"
     )
 
@@ -160,37 +160,37 @@ def shouldAdd(prob):
 
 def insertGroup(psql, group):
     return psql.execute(
-        f"INSERT INTO {utils.TABLE_GROUPS} (id) 
+        f"INSERT INTO {utils.TABLE_GROUPS} (id) \
             VALUES ('{group}');"
     )
 
 def insertStudent(psql, studentId, studentName, studentSurname, group):
     return psql.execute(
-        f"INSERT INTO {utils.TABLE_STUDENTS} (id, name, surname, group_fk) 
+        f"INSERT INTO {utils.TABLE_STUDENTS} (id, name, surname, group_fk) \
             VALUES ('{studentId}', '{studentName}', '{studentSurname}', '{group}');"
     )
 
 def insertLesson(psql, name, type, courseId):
     return psql.execute(
-        f"INSERT INTO {utils.TABLE_LESSONS} (description_fk, type, course_fk) 
+        f"INSERT INTO {utils.TABLE_LESSONS} (description_fk, type, course_fk) \
             VALUES ('{name}', '{type}', '{courseId}');"
     )
 
 def insertLessonMaterials(psql, lesson, title, description):
     return psql.execute(
-        f"INSERT INTO {utils.TABLE_LESSON_MATERIALS} (lesson_fk, title, description) 
+        f"INSERT INTO {utils.TABLE_LESSON_MATERIALS} (lesson_fk, title, description) \
             VALUES ('{lesson}', '{title}', '{description}');"
     )
 
 def insertSchedule(psql, group, lesson, time):
     return psql.execute(
-        f"INSERT INTO {utils.TABLE_SCHEDULE} (group_fk, lesson_fk, time) 
+        f"INSERT INTO {utils.TABLE_SCHEDULE} (group_fk, lesson_fk, time) \
             VALUES ('{group}', {lesson}, '{time}');"
     )
 
 def insertVisit(psql, schedule_fk, student, visited):
     return psql.execute(
-        f"INSERT INTO {utils.TABLE_VISITS} (schedule_fk, student_fk, visited) 
+        f"INSERT INTO {utils.TABLE_VISITS} (schedule_fk, student_fk, visited) \
             VALUES ('{schedule_fk}', '{student}', {visited});"
     )
 
@@ -226,7 +226,7 @@ def fillVisits(psql, schedl):
         insertVisit(psql, schedl["id"], student["id"], shouldAdd(0.8))
 
 
-def fillScheme(postgre, specialitites = '', courses = '', lessons_descriptions = '', lesson_materials = ''):
+def fillScheme(postgre, specialitites = [], courses = '', lessons_descriptions = '', lesson_materials = ''):
     generateData()
 
     for group in GROUPS:
