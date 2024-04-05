@@ -250,7 +250,7 @@ def fillVisits(psql, schedule):
         insertVisit(psql, schedule["id"], student["id"], shouldAdd(0.8))
 
 
-def fillScheme(postgre, lessons_descriptions = '', lesson_materials = ''):
+def fillScheme(postgre, lesson_materials = []):
     generateData()
 
     for group in GROUPS:
@@ -259,11 +259,11 @@ def fillScheme(postgre, lessons_descriptions = '', lesson_materials = ''):
     for student in STUDENTS:
         insertStudent(postgre, student["id"], student["name"], student["surname"], student["group"])
 
-    for _ in lessons_descriptions:
+    for _ in lessons_materials:
         insertLesson(postgre, "Лекция" if shouldAdd(0.5) else "Практика")
 
-    # for lesson_material in lesson_materials:
-    #     insertLessonMaterials(postgre, )
+    for lesson_material in lesson_materials:
+        insertLessonMaterials(postgre, lesson)
 
     lessons = utils.getLessons(postgre)
     
